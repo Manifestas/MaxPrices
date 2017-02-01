@@ -1,5 +1,6 @@
 package com.company;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -50,9 +51,17 @@ public class ExcelFile {
                 --i;
             } else {
                 tempValue = cellValue;
+                Cell cell8 = sheet.getRow(i).getCell(8);
+                cell8.setCellValue(QueryUtils.fetchMaxPrice(cellValue));
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         closeTable();
+        System.out.println("Подстановка цен завершена.");
     }
 
 

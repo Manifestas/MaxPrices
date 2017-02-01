@@ -12,8 +12,8 @@ import java.net.URL;
 
 public class QueryUtils {
 
-    public static final String REQUEST_URL = "http://www.parad-shoes.ru/api/products?";
-    public static final String MODEL_TAG = "tags%5B%5D=";
+    private static final String REQUEST_URL = "http://www.parad-shoes.ru/api/products?";
+    private static final String MODEL_TAG = "tags%5B%5D=";
     private static final String USER_AGENT = "Mozilla/5.0";
 
     private QueryUtils() {
@@ -35,8 +35,18 @@ public class QueryUtils {
         try {
             JSONObject jsonObject = new JSONObject(jsonResponse);
             JSONArray products = jsonObject.getJSONArray("products");
+            //if array is empty - return null;
+            if (products.isNull(0)) {
+                return maxPrice;
+            }
             JSONObject model = products.getJSONObject(0);
-            maxPrice = model.getString("PRICE");
+            // if key "IS_SALE_PRICE" false - return null
+            if (!model.getBoolean("IS_SALE_PRICE")) {
+                return maxPrice;
+            }
+            int maxPriceInt = model.getInt("PRICE");
+            maxPrice = String.valueOf(maxPriceInt);
+            System.out.println(maxPrice);
         } catch (JSONException e) {
             System.out.println("Problem parsing JSON results" + e);
         }
