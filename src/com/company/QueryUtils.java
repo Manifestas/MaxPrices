@@ -1,6 +1,5 @@
 package com.company;
 
-import com.google.gson.JsonObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,6 +82,7 @@ public class QueryUtils {
                 inputStream.close();
             }
         }
+        return jsonResponse;
     }
 
     private static String readFromStream(InputStream inputStream) throws IOException {
