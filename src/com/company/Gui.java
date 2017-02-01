@@ -63,10 +63,13 @@ public class Gui implements ActionListener{
     private void writeInstruction(JTextArea textArea) {
         StringBuilder builder = new StringBuilder();
         builder.append("1. В \"этикетках\" загрузить нужную переоценку.\n");
-        builder.append("2. .\n");
-        builder.append("3. Экспортировать полученное в таблицу Excel.\n");
+        builder.append("2. Выбрать не нулевые позиции через фильтр в столбце\"Кол-во\".\n");
+        builder.append("3. Экспортировать полученное в таблицу Excel, запомнив ее местонахождение.\n");
         builder.append("4. Нажать кнопку \"Загрузить таблицу\".\n");
-        builder.append("5. Выбрать ранее сохранненую таблицу.\n\n\n");
+        builder.append("5. Выбрать ранее сохранненую таблицу.\n");
+        builder.append("6. Нажать кнопку \"Поставить цены\".\n");
+        builder.append("7. Нажать кнопку \"Показать таблицу\".\n");
+        builder.append("8. ")
         textArea.setText(builder.toString());
     }
 
