@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class Gui implements ActionListener{
 
@@ -11,6 +12,9 @@ public class Gui implements ActionListener{
     private JButton processButton;
     private JButton showButton;
     private JButton exitButton;
+
+    private File tableFile;
+    private JTextArea textArea;
 
     public void initUi() {
         JFrame frame = new JFrame("Max price");
@@ -20,7 +24,7 @@ public class Gui implements ActionListener{
         initButtons(panel);
         panel.setLayout(new GridLayout(10, 1, 5, 15));
 
-        JTextArea textArea = new JTextArea();
+        textArea = new JTextArea();
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setEditable(false);
@@ -60,7 +64,7 @@ public class Gui implements ActionListener{
         builder.append("2. .\n");
         builder.append("3. Экспортировать полученное в таблицу Excel.\n");
         builder.append("4. Нажать кнопку \"Загрузить таблицу\".\n");
-        builder.append("5. Выбрать ранее сохранненую таблицу.\n");
+        builder.append("5. Выбрать ранее сохранненую таблицу.\n\n\n");
         textArea.setText(builder.toString());
     }
 
@@ -78,5 +82,17 @@ public class Gui implements ActionListener{
     }
 
     private void loadTable() {
+        JFileChooser fileChooser = new JFileChooser();
+        int retValue = fileChooser.showDialog(null, "Открыть файл");
+        if (retValue == JFileChooser.APPROVE_OPTION) {
+            tableFile = fileChooser.getSelectedFile();
+            log("Выбран файл " + tableFile.getName());
+        } else {
+            log("Выбор файла прерван.");
+        }
+    }
+
+    public void log(String msg) {
+        textArea.append(msg + "\n");
     }
 }

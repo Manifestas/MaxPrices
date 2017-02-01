@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="MaxPrices:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/MaxPrices_jar</output-path>
+    <root id="archive" name="MaxPrices.jar">
+      <element id="module-output" name="MaxPrices" />
+    </root>
+  </artifact>
+</component>
