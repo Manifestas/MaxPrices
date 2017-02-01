@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 
 public class Gui implements ActionListener{
 
@@ -15,6 +16,7 @@ public class Gui implements ActionListener{
 
     private File tableFile;
     private JTextArea textArea;
+    ExcelFile excelFile;
 
     public void initUi() {
         JFrame frame = new JFrame("Max price");
@@ -73,7 +75,7 @@ public class Gui implements ActionListener{
         if (actionEvent.getSource() == loadButton) {
             loadTable();
         } else if (actionEvent.getSource() == processButton) {
-
+            process();
         } else if (actionEvent.getSource() == showButton) {
 
         } else if (actionEvent.getSource() == exitButton) {
@@ -86,13 +88,30 @@ public class Gui implements ActionListener{
         int retValue = fileChooser.showDialog(null, "Открыть файл");
         if (retValue == JFileChooser.APPROVE_OPTION) {
             tableFile = fileChooser.getSelectedFile();
+            try {
+                excelFile = new ExcelFile(tableFile);
+            } catch (IOException e) {
+                log("Невозможно открыть файл.");
+            }
             log("Выбран файл " + tableFile.getName());
         } else {
             log("Выбор файла прерван.");
         }
     }
 
+    public void process() {
+        if (excelFile == null) {
+            log("Сначала необходимо загрузить таблицу.");
+        } else {
+            excelFile.removeDuplicates();
+        }
+    }
+
     public void log(String msg) {
         textArea.append(msg + "\n");
+    }
+
+    public File getTableFile() {
+        return tableFile;
     }
 }
