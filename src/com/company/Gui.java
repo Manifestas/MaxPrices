@@ -77,7 +77,7 @@ public class Gui implements ActionListener{
         } else if (actionEvent.getSource() == processButton) {
             process();
         } else if (actionEvent.getSource() == showButton) {
-
+            openFile();
         } else if (actionEvent.getSource() == exitButton) {
             System.exit(0);
         }
@@ -108,6 +108,24 @@ public class Gui implements ActionListener{
             } catch (IOException e) {
                 log("Невозможно записать файл, возможно он открыт другой программой");
             }
+        }
+    }
+
+    private void openFile() {
+        Desktop desktop = Desktop.getDesktop();
+        try {
+            desktop.open(tableFile);
+        } catch (NullPointerException e) {
+            log("Необходимо сначала открыть таблицу и поставить цены.");
+        } catch (IllegalArgumentException e) {
+            log("Файл не существует, возможно он удален или перемещен.");
+        } catch (UnsupportedOperationException e) {
+            log("Данная платформа не поддерживает открытие файла отсюда.");
+        } catch (IOException e) {
+            log("Файл таблицы не ассоциирован с какой либо программой для открытия" +
+            " или программа не смогла запуститься.");
+        } catch (SecurityException e) {
+            log("Доступ к файлу запрещен.");
         }
     }
 
