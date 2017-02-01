@@ -16,7 +16,7 @@ public class Gui implements ActionListener{
 
     private File tableFile;
     private JTextArea textArea;
-    ExcelFile excelFile;
+    private ExcelFile excelFile;
 
     public void initUi() {
         JFrame frame = new JFrame("Max price");
@@ -99,11 +99,15 @@ public class Gui implements ActionListener{
         }
     }
 
-    public void process() {
+    private void process() {
         if (excelFile == null) {
             log("Сначала необходимо загрузить таблицу.");
         } else {
-            excelFile.removeDuplicates();
+            try {
+                excelFile.removeDuplicates();
+            } catch (IOException e) {
+                log("Невозможно записать файл, возможно он открыт другой программой");
+            }
         }
     }
 

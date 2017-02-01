@@ -2,20 +2,17 @@ package com.company;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 
-/**
- * Created by tv.unimol on 01.02.2017.
- */
 public class ExcelFile {
 
-    File excelFile;
-    Sheet sheet;
+    private File excelFile;
+    private Sheet sheet;
+    private XSSFWorkbook workbook;
 
-    public ExcelFile(File file) throws IOException{
+    public ExcelFile(File file) throws IOException {
         excelFile = file;
         loadSheet();
     }
@@ -24,11 +21,11 @@ public class ExcelFile {
     private void loadSheet() throws FileNotFoundException, IOException {
         InputStream inputStream = new FileInputStream(excelFile);
         // TODO: проверку на расширение(если xls, то исп. HSSFWorkbook
-        XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+        workbook = new XSSFWorkbook(inputStream);
         sheet = workbook.getSheetAt(0);
     }
 
-    public void deleteRow(int rowNo) {
+    private void deleteRow(int rowNo) {
         if (sheet == null) {
             return;
         }
@@ -44,8 +41,25 @@ public class ExcelFile {
         }
     }
 
-    public void removeDuplicates() {
-        int lastRow = sheet.getLastRowNum();
-        System.out.println(lastRow);
+    public void removeDuplicates() throws IOException {
+        String tempValue = "";
+        for (int i = 1; i <= sheet.getLastRowNum(); ++i) {
+            String cellValue = sheet.getRow(i).getCell(0).toString();
+            if (cellValue.equals(tempValue)) {
+                deleteRow(i);
+                --i;
+            } else {
+                tempValue = cellValue;
+            }
+        }
+        closeTable();
+    }
+
+
+    private void closeTable() throws IOException {
+        // Write the output to a file
+        FileOutputStream fileOut = new FileOutputStream(excelFile);
+        workbook.write(fileOut);
+        fileOut.close();
     }
 }
