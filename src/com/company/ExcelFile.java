@@ -102,11 +102,10 @@ public class ExcelFile {
      */
      private void formatTable() {
          deleteColumn(sheet, 3);
-         deleteColumn(sheet, 4);
-         deleteColumn(sheet, 5);
-         deleteColumn(sheet, 6);
-         deleteColumn(sheet, 7);
-
+         //удалить 4-7 столбцы(они смещаются налево, поэтому один номер
+         for (int i = 0; i < 4; ++i) {
+             deleteColumn(sheet, 4);
+         }
          Cell count = sheet.getRow(0).getCell(3);
          count.setCellValue("Количество");
 
