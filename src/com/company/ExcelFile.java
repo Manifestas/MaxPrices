@@ -1,7 +1,6 @@
 package com.company;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -29,6 +28,7 @@ public class ExcelFile {
 
     /**
      * Remove(shift) row.
+     *
      * @param rowNo row number to be deleted
      */
     private void deleteRow(int rowNo) {
@@ -50,6 +50,7 @@ public class ExcelFile {
     /**
      * Remove rows with duplicate models.
      * and format table for import in tradex
+     *
      * @throws IOException when file can't be saved.
      */
     public void removeDuplicates() throws IOException {
@@ -79,9 +80,8 @@ public class ExcelFile {
 
     /**
      * Проставляет цену для артикула(первая ячейка в строке) в пятой колонке таблицы.
-     *
      */
-    public void putPrices() throws IOException{
+    public void putPrices() throws IOException {
         for (int i = 1; i <= sheet.getLastRowNum(); ++i) {
             String modelCell = sheet.getRow(i).getCell(0).toString();
             Cell priceCell = sheet.getRow(i).createCell(4);
@@ -96,58 +96,59 @@ public class ExcelFile {
         closeTable();
     }
 
-    /** Удаляет столбцы "Название", "Цена", "Ск%", "Цена со ск.", "Ст.цена",
-     *  меняет название стобца "Кол-во" на "Количество"
+    /**
+     * Удаляет столбцы "Название", "Цена", "Ск%", "Цена со ск.", "Ст.цена",
+     * меняет название стобца "Кол-во" на "Количество"
      */
-     private void formatTable() {
-         deleteColumn(sheet, 3);
-         //удалить 4-7 столбцы(они смещаются налево, поэтому один номер
-         for (int i = 0; i < 4; ++i) {
-             deleteColumn(sheet, 4);
-         }
-         Cell count = sheet.getRow(0).getCell(3);
-         count.setCellValue("Количество");
+    private void formatTable() {
+        deleteColumn(sheet, 3);
+        //удалить 4-7 столбцы(они смещаются налево, поэтому один номер
+        for (int i = 0; i < 4; ++i) {
+            deleteColumn(sheet, 4);
+        }
+        Cell count = sheet.getRow(0).getCell(3);
+        count.setCellValue("Количество");
 
     }
 
     /**
      * Given a sheet, this method deletes a column from a sheet and moves
      * all the columns to the right of it to the left one cell.
-     *
+     * <p>
      * Note, this method will not update any formula references.
      */
-    public static void deleteColumn(Sheet sheet, int columnToDelete){
+    private static void deleteColumn(Sheet sheet, int columnToDelete) {
         int maxColumn = 0;
-        for ( int r=0; r < sheet.getLastRowNum()+1; r++ ){
-            Row row = sheet.getRow( r );
+        for (int r = 0; r < sheet.getLastRowNum() + 1; r++) {
+            Row row = sheet.getRow(r);
 
             // if no row exists here; then nothing to do; next!
-            if ( row == null )
+            if (row == null)
                 continue;
 
             // if the row doesn't have this many columns then we are good; next!
             int lastColumn = row.getLastCellNum();
-            if ( lastColumn > maxColumn )
+            if (lastColumn > maxColumn)
                 maxColumn = lastColumn;
 
-            if ( lastColumn < columnToDelete )
+            if (lastColumn < columnToDelete)
                 continue;
 
-            for ( int x=columnToDelete+1; x < lastColumn + 1; x++ ){
-                Cell oldCell    = row.getCell(x-1);
-                if ( oldCell != null )
-                    row.removeCell( oldCell );
+            for (int x = columnToDelete + 1; x < lastColumn + 1; x++) {
+                Cell oldCell = row.getCell(x - 1);
+                if (oldCell != null)
+                    row.removeCell(oldCell);
 
-                Cell nextCell   = row.getCell( x );
-                if ( nextCell != null ){
-                    Cell newCell    = row.createCell( x-1, nextCell.getCellType() );
+                Cell nextCell = row.getCell(x);
+                if (nextCell != null) {
+                    Cell newCell = row.createCell(x - 1, nextCell.getCellType());
                     cloneCell(newCell, nextCell);
                 }
             }
         }
         // Adjust the column widths
-        for ( int c=0; c < maxColumn; c++ ){
-            sheet.setColumnWidth( c, sheet.getColumnWidth(c+1) );
+        for (int c = 0; c < maxColumn; c++) {
+            sheet.setColumnWidth(c, sheet.getColumnWidth(c + 1));
         }
     }
 
@@ -155,29 +156,29 @@ public class ExcelFile {
      * Takes an existing Cell and merges all the styles and forumla
      * into the new one
      */
-    private static void cloneCell(Cell cNew, Cell cOld){
+    private static void cloneCell(Cell cNew, Cell cOld) {
         cNew.setCellComment(cOld.getCellComment());
         cNew.setCellStyle(cOld.getCellStyle());
 
-        switch ( cNew.getCellTypeEnum() ){
-            case BOOLEAN:{
-                cNew.setCellValue( cOld.getBooleanCellValue() );
+        switch (cNew.getCellTypeEnum()) {
+            case BOOLEAN: {
+                cNew.setCellValue(cOld.getBooleanCellValue());
                 break;
             }
-            case NUMERIC:{
-                cNew.setCellValue( cOld.getNumericCellValue() );
+            case NUMERIC: {
+                cNew.setCellValue(cOld.getNumericCellValue());
                 break;
             }
-            case STRING:{
-                cNew.setCellValue( cOld.getStringCellValue() );
+            case STRING: {
+                cNew.setCellValue(cOld.getStringCellValue());
                 break;
             }
-            case ERROR:{
-                cNew.setCellValue( cOld.getErrorCellValue() );
+            case ERROR: {
+                cNew.setCellValue(cOld.getErrorCellValue());
                 break;
             }
-            case FORMULA:{
-                cNew.setCellFormula( cOld.getCellFormula() );
+            case FORMULA: {
+                cNew.setCellFormula(cOld.getCellFormula());
                 break;
             }
         }
