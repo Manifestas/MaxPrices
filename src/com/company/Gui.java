@@ -10,8 +10,10 @@ import java.io.IOException;
 public class Gui implements ActionListener{
 
     private JButton loadButton;
+    private JButton duplicateButton;
     private JButton processButton;
     private JButton showButton;
+    private JButton showInstruction;
     private JButton exitButton;
 
     private File tableFile;
@@ -45,18 +47,24 @@ public class Gui implements ActionListener{
 
     private void initButtons(JPanel panel) {
         loadButton = new JButton("Загрузить таблицу");
+        duplicateButton = new JButton("Удалить дубликаты");
         processButton = new JButton("Поставить цены");
         showButton = new JButton("Показать таблицу");
+        showInstruction = new JButton(("Инструкция"));
         exitButton = new JButton("Выход");
 
         loadButton.addActionListener(this);
+        duplicateButton.addActionListener(this);
         processButton.addActionListener(this);
         showButton.addActionListener(this);
+        showInstruction.addActionListener(this);
         exitButton.addActionListener(this);
 
         panel.add(loadButton);
+        panel.add(duplicateButton);
         panel.add(processButton);
         panel.add(showButton);
+        panel.add(showInstruction);
         panel.add(exitButton);
     }
 
@@ -69,7 +77,7 @@ public class Gui implements ActionListener{
         builder.append("5. Выбрать ранее сохранненую таблицу.\n");
         builder.append("6. Нажать кнопку \"Поставить цены\".\n");
         builder.append("7. Нажать кнопку \"Показать таблицу\".\n");
-        builder.append("8. ")
+        builder.append("8. ");
         textArea.setText(builder.toString());
     }
 
@@ -77,10 +85,14 @@ public class Gui implements ActionListener{
     public void actionPerformed(ActionEvent actionEvent) {
         if (actionEvent.getSource() == loadButton) {
             loadTable();
+        } else if (actionEvent.getSource() == duplicateButton) {
+            removeDuplicates();
         } else if (actionEvent.getSource() == processButton) {
             process();
         } else if (actionEvent.getSource() == showButton) {
             openFile();
+        } else if (actionEvent.getSource() == showInstruction) {
+            writeInstruction(textArea);
         } else if (actionEvent.getSource() == exitButton) {
             System.exit(0);
         }
@@ -100,6 +112,10 @@ public class Gui implements ActionListener{
         } else {
             log("Выбор файла прерван.");
         }
+    }
+
+    private void removeDuplicates() {
+
     }
 
     private void process() {

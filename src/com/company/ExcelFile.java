@@ -42,6 +42,7 @@ public class ExcelFile {
         }
     }
 
+    // TODO: убирать строки с нулями в количестве и менять кол-во больше чем 1 на 1
     public void removeDuplicates() throws IOException {
         String tempValue = "";
         for (int i = 1; i <= sheet.getLastRowNum(); ++i) {
