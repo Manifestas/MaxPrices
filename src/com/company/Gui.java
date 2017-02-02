@@ -115,6 +115,15 @@ public class Gui implements ActionListener{
     }
 
     private void removeDuplicates() {
+        if (excelFile == null) {
+            log("Сначала необходимо загрузить таблицу.");
+        } else {
+            try {
+                excelFile.removeDuplicates();
+            } catch (IOException e) {
+                log("Невозможно записать файл, возможно он открыт другой программой");
+            }
+        }
 
     }
 
@@ -123,7 +132,7 @@ public class Gui implements ActionListener{
             log("Сначала необходимо загрузить таблицу.");
         } else {
             try {
-                excelFile.removeDuplicates();
+                excelFile.putPrices();
             } catch (IOException e) {
                 log("Невозможно записать файл, возможно он открыт другой программой");
             }

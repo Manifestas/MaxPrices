@@ -49,7 +49,8 @@ public class ExcelFile {
 
     /**
      * Remove rows with duplicate models.
-     * @throws IOException
+     * and format table for import in tradex
+     * @throws IOException when file can't be saved.
      */
     public void removeDuplicates() throws IOException {
         formatTable();
@@ -66,7 +67,7 @@ public class ExcelFile {
             }
         }
         closeTable();
-        System.out.println("Подстановка цен завершена.");
+        System.out.println("Преобразование тыблицы завершено.");
     }
 
     /**
