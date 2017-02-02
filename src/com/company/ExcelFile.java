@@ -82,10 +82,9 @@ public class ExcelFile {
      *
      */
     public void putPrices() throws IOException{
-        for (Row row : sheet) {
-            String modelCell = row.getCell(0).toString();
-            Cell priceCell = row.getCell(4);
-            priceCell.setCellType(CellType.NUMERIC);
+        for (int i = 1; i <= sheet.getLastRowNum(); ++i) {
+            String modelCell = sheet.getRow(i).getCell(0).toString();
+            Cell priceCell = sheet.getRow(i).createCell(4);
             priceCell.setCellValue(QueryUtils.fetchMaxPrice(modelCell));
             try {
                 // не знаю, как сервер отреагирует, на всякий случай
