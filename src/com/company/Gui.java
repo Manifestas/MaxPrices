@@ -4,10 +4,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
-public class Gui implements ActionListener{
+public class Gui implements ActionListener, PropertyChangeListener{
 
     private JButton loadButton;
     private JButton duplicateButton;
@@ -125,8 +127,10 @@ public class Gui implements ActionListener{
             log("Сначала необходимо загрузить таблицу.");
         } else {
             try {
-                excelFile.removeDuplicates();
-            } catch (IOException e) {
+                FormatTableTask formatTableTask = new FormatTableTask(excelFile);
+                formatTableTask.addPropertyChangeListener(this);
+                formatTableTask.execute();
+            } catch (Exception e) {
                 log("Невозможно записать файл, возможно он открыт другой программой");
             }
         }
@@ -169,5 +173,10 @@ public class Gui implements ActionListener{
 
     public File getTableFile() {
         return tableFile;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+
     }
 }

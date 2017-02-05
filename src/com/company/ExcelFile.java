@@ -18,6 +18,10 @@ public class ExcelFile {
         loadSheet();
     }
 
+    public Sheet getSheet() {
+        return sheet;
+    }
+
     // TODO: разобраться с поимкой исключений
     private void loadSheet() throws FileNotFoundException, IOException {
         InputStream inputStream = new FileInputStream(excelFile);
