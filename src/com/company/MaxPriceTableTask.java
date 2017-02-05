@@ -35,4 +35,10 @@ public class MaxPriceTableTask extends SwingWorker<Void, Void> {
         file.closeTable();
         return null;
     }
+
+    @Override
+    protected void done() {
+        super.done();
+        gui.makeProgressBarInvisible();
+    }
 }

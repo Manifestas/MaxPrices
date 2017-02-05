@@ -23,6 +23,14 @@ public class Gui implements ActionListener, PropertyChangeListener {
     private JTextArea textArea;
     private ExcelFile excelFile;
 
+
+    private TextAreaLog textAreaLog;
+
+    public Gui() {
+        textAreaLog = new TextAreaLog();
+
+    }
+
     public void initUi() {
         JFrame frame = new JFrame("Max price");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -31,11 +39,7 @@ public class Gui implements ActionListener, PropertyChangeListener {
         initButtons(panel);
         panel.setLayout(new GridLayout(10, 1, 5, 15));
 
-        textArea = new JTextArea();
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        textArea.setMargin(new Insets(5, 5, 5, 5));
-        textArea.setEditable(false);
+        initTextArea();
         writeInstruction(textArea);
 
         progressBar = new JProgressBar(0, 100);
@@ -75,6 +79,15 @@ public class Gui implements ActionListener, PropertyChangeListener {
         panel.add(showButton);
         panel.add(showInstruction);
         panel.add(exitButton);
+    }
+
+    private void initTextArea() {
+        textArea = new JTextArea();
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setMargin(new Insets(5, 5, 5, 5));
+        textArea.setEditable(false);
+        textArea.setFont(textArea.getFont().deriveFont(12f)); // will only change size to 12pt
     }
 
     private void writeInstruction(JTextArea textArea) {
@@ -120,17 +133,17 @@ public class Gui implements ActionListener, PropertyChangeListener {
             try {
                 excelFile = new ExcelFile(tableFile);
             } catch (IOException e) {
-                log("Невозможно открыть файл.");
+                textAreaLog.textAppend("Невозможно открыть файл.");
             }
-            log("Выбран файл " + tableFile.getName());
+            textAreaLog.textAppend("Выбран файл " + tableFile.getName());
         } else {
-            log("Выбор файла прерван.");
+            textAreaLog.textAppend("Выбор файла прерван.");
         }
     }
 
     private void removeDuplicates() {
         if (excelFile == null) {
-            log("Сначала необходимо загрузить таблицу.");
+            textAreaLog.textAppend("Сначала необходимо загрузить таблицу.");
         } else {
             progressBar.setVisible(true);
             progressBar.setValue(0);
@@ -139,7 +152,7 @@ public class Gui implements ActionListener, PropertyChangeListener {
                 formatTableTask.addPropertyChangeListener(this);
                 formatTableTask.execute();
             } catch (Exception e) {
-                log("Невозможно записать файл, возможно он открыт другой программой");
+                textAreaLog.textAppend("Невозможно записать файл, возможно он открыт другой программой");
             }
         }
 
@@ -147,7 +160,7 @@ public class Gui implements ActionListener, PropertyChangeListener {
 
     private void process() {
         if (excelFile == null) {
-            log("Сначала необходимо загрузить таблицу.");
+            textAreaLog.textAppend("Сначала необходимо загрузить таблицу.");
         } else {
             progressBar.setVisible(true);
             progressBar.setValue(0);
@@ -156,7 +169,7 @@ public class Gui implements ActionListener, PropertyChangeListener {
                 maxPriceTableTask.addPropertyChangeListener(this);
                 maxPriceTableTask.execute();
             } catch (Exception e) {
-                log("Невозможно записать файл, возможно он открыт другой программой");
+                textAreaLog.textAppend("Невозможно записать файл, возможно он открыт другой программой");
             }
         }
     }
@@ -166,21 +179,17 @@ public class Gui implements ActionListener, PropertyChangeListener {
         try {
             desktop.open(tableFile);
         } catch (NullPointerException e) {
-            log("Необходимо сначала открыть таблицу и поставить цены.");
+            textAreaLog.textAppend("Необходимо сначала открыть таблицу и поставить цены.");
         } catch (IllegalArgumentException e) {
-            log("Файл не существует, возможно он удален или перемещен.");
+            textAreaLog.textAppend("Файл не существует, возможно он удален или перемещен.");
         } catch (UnsupportedOperationException e) {
-            log("Данная платформа не поддерживает открытие файла отсюда.");
+            textAreaLog.textAppend("Данная платформа не поддерживает открытие файла отсюда.");
         } catch (IOException e) {
-            log("Файл таблицы не ассоциирован с какой либо программой для открытия" +
+            textAreaLog.textAppend("Файл таблицы не ассоциирован с какой либо программой для открытия" +
                     " или программа не смогла запуститься.");
         } catch (SecurityException e) {
-            log("Доступ к файлу запрещен.");
+            textAreaLog.textAppend("Доступ к файлу запрещен.");
         }
-    }
-
-    public void log(String msg) {
-        textArea.append(msg + "\n");
     }
 
     public ExcelFile getExcelFile() {
@@ -196,6 +205,13 @@ public class Gui implements ActionListener, PropertyChangeListener {
         if (evt.getPropertyName().equalsIgnoreCase("progress")) {
             int progress = (Integer) evt.getNewValue();
             progressBar.setValue(progress);
+        }
+    }
+
+    public class TextAreaLog {
+
+        public void textAppend(String text) {
+            textArea.append(text + "\n");
         }
     }
 }
