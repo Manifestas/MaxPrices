@@ -18,6 +18,7 @@ public class Gui implements ActionListener, PropertyChangeListener{
     private JButton showInstruction;
     private JButton exitButton;
 
+    private JProgressBar progressBar;
     private File tableFile;
     private JTextArea textArea;
     private ExcelFile excelFile;
@@ -37,12 +38,17 @@ public class Gui implements ActionListener, PropertyChangeListener{
         textArea.setEditable(false);
         writeInstruction(textArea);
 
+        progressBar = new JProgressBar(0, 100);
+        progressBar.setVisible(false);
+        progressBar.setStringPainted(true);
+
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         frame.getContentPane().add(BorderLayout.CENTER, scrollPane);
         frame.getContentPane().add(BorderLayout.EAST, panel);
+        frame.getContentPane().add(BorderLayout.NORTH, progressBar);
 
         frame.setSize(640, 480);
         frame.setVisible(true);
@@ -126,8 +132,10 @@ public class Gui implements ActionListener, PropertyChangeListener{
         if (excelFile == null) {
             log("Сначала необходимо загрузить таблицу.");
         } else {
+            progressBar.setVisible(true);
+            progressBar.setValue(0);
             try {
-                FormatTableTask formatTableTask = new FormatTableTask(excelFile);
+                FormatTableTask formatTableTask = new FormatTableTask(this);
                 formatTableTask.addPropertyChangeListener(this);
                 formatTableTask.execute();
             } catch (Exception e) {
@@ -171,12 +179,19 @@ public class Gui implements ActionListener, PropertyChangeListener{
         textArea.append(msg + "\n");
     }
 
-    public File getTableFile() {
-        return tableFile;
+    public ExcelFile getExcelFile() {
+        return excelFile;
+    }
+
+    public void makeProgressBarInvisible() {
+        progressBar.setVisible(false);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-
+        if (evt.getPropertyName().equalsIgnoreCase("progress")) {
+            int progress = (Integer) evt.getNewValue();
+            progressBar.setValue(progress);
+        }
     }
 }

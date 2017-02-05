@@ -35,7 +35,7 @@ public class ExcelFile {
      *
      * @param rowNo row number to be deleted
      */
-    private void deleteRow(int rowNo) {
+    public void deleteRow(int rowNo) {
         if (sheet == null) {
             return;
         }
@@ -78,7 +78,7 @@ public class ExcelFile {
     /**
      * Возвращает строку, находящуюся на пересечении номера строки и столбца
      */
-    private String getCellValue(int rowNumber, int cellNumber) {
+    public String getCellValue(int rowNumber, int cellNumber) {
         return sheet.getRow(rowNumber).getCell(cellNumber).toString();
     }
 
@@ -104,7 +104,7 @@ public class ExcelFile {
      * Удаляет столбцы "Название", "Цена", "Ск%", "Цена со ск.", "Ст.цена",
      * меняет название стобца "Кол-во" на "Количество"
      */
-    private void formatTable() {
+    public void formatTable() {
         deleteColumn(sheet, 3);
         //удалить 4-7 столбцы(они смещаются налево, поэтому один номер
         for (int i = 0; i < 4; ++i) {
@@ -188,7 +188,7 @@ public class ExcelFile {
         }
     }
 
-    private void closeTable() throws IOException {
+    public void closeTable() throws IOException {
         // Write the output to a file
         FileOutputStream fileOut = new FileOutputStream(excelFile);
         workbook.write(fileOut);
