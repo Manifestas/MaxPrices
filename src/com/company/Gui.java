@@ -31,6 +31,7 @@ public class Gui implements ActionListener{
         textArea = new JTextArea();
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
+        textArea.setMargin(new Insets(5, 5, 5, 5));
         textArea.setEditable(false);
         writeInstruction(textArea);
 
