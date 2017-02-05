@@ -9,7 +9,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
-public class Gui implements ActionListener, PropertyChangeListener{
+public class Gui implements ActionListener, PropertyChangeListener {
 
     private JButton loadButton;
     private JButton duplicateButton;
@@ -149,9 +149,13 @@ public class Gui implements ActionListener, PropertyChangeListener{
         if (excelFile == null) {
             log("Сначала необходимо загрузить таблицу.");
         } else {
+            progressBar.setVisible(true);
+            progressBar.setValue(0);
             try {
-                excelFile.putPrices();
-            } catch (IOException e) {
+                MaxPriceTableTask maxPriceTableTask = new MaxPriceTableTask(this);
+                maxPriceTableTask.addPropertyChangeListener(this);
+                maxPriceTableTask.execute();
+            } catch (Exception e) {
                 log("Невозможно записать файл, возможно он открыт другой программой");
             }
         }
@@ -169,7 +173,7 @@ public class Gui implements ActionListener, PropertyChangeListener{
             log("Данная платформа не поддерживает открытие файла отсюда.");
         } catch (IOException e) {
             log("Файл таблицы не ассоциирован с какой либо программой для открытия" +
-            " или программа не смогла запуститься.");
+                    " или программа не смогла запуститься.");
         } catch (SecurityException e) {
             log("Доступ к файлу запрещен.");
         }

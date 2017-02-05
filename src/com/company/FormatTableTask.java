@@ -17,7 +17,6 @@ public class FormatTableTask extends SwingWorker<Void, Void> {
     }
     @Override
     protected Void doInBackground() throws IOException {
-        setProgress(0);
         file.formatTable();
         setProgress(10);
         Sheet sheet = file.getSheet();
