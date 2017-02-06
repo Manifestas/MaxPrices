@@ -1,8 +1,10 @@
 package com.company;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
@@ -11,7 +13,7 @@ public class ExcelFile {
 
     private File excelFile;
     private Sheet sheet;
-    private XSSFWorkbook workbook;
+    private Workbook workbook;
     private Gui.TextAreaLog textAreaLog;
 
     public ExcelFile(File file, Gui.TextAreaLog textAreaLog) {
@@ -27,8 +29,14 @@ public class ExcelFile {
     private void loadSheet() {
         try {
             InputStream inputStream = new FileInputStream(excelFile);
-            // TODO: проверку на расширение(если xls, то исп. HSSFWorkbook
-            workbook = new XSSFWorkbook(inputStream);
+            if (getFileExtension(excelFile).equalsIgnoreCase("xls")) {
+                workbook = new HSSFWorkbook(inputStream);
+            } else if (getFileExtension(excelFile).equalsIgnoreCase("xlsx")) {
+                workbook = new XSSFWorkbook(inputStream);
+            } else {
+                textAreaLog.textAppend("Файл должен быть с расширением xls или xlsx");
+                return;
+            }
             sheet = workbook.getSheetAt(0);
         } catch (FileNotFoundException e) {
             textAreaLog.textAppend("Файл не найден. " + e);
@@ -164,5 +172,12 @@ public class ExcelFile {
         } catch (IOException e) {
             textAreaLog.textAppend("Файл не может быть сохранен." + e);
         }
+    }
+
+    private String getFileExtension(File file) {
+        String fileName = file.getName();
+        if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+            return fileName.substring(fileName.lastIndexOf(".") + 1);
+        else return "";
     }
 }
