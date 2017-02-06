@@ -130,7 +130,7 @@ public class ExcelFile {
     }
 
     /**
-     * Takes an existing Cell and merges all the styles and forumla
+     * Takes an existing Cell and merges all the styles and formula
      * into the new one
      */
     private static void cloneCell(Cell cNew, Cell cOld) {

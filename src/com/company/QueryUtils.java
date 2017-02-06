@@ -37,12 +37,12 @@ public class QueryUtils {
             JSONArray products = jsonObject.getJSONArray("products");
             //if array is empty - return null;
             if (products.isNull(0)) {
-                return maxPrice;
+                return null;
             }
             JSONObject model = products.getJSONObject(0);
             // if key "IS_SALE_PRICE" false - return null
             if (!model.getBoolean("IS_SALE_PRICE")) {
-                return maxPrice;
+                return null;
             }
             int maxPriceInt = model.getInt("PRICE");
             maxPrice = String.valueOf(maxPriceInt);
