@@ -102,7 +102,7 @@ public class Gui implements ActionListener, PropertyChangeListener {
                 "9. Нажать кнопку \"Поставить цены\".\n" +
                 "10. Нажать кнопку \"Показать таблицу\".\n" +
                 "11. Скопировать ячейки с ценами.\n" +
-                "12. Вставить в TradeX в столбец \"Старые цены\".\n";
+                "12. Вставить в TradeX в столбец \"Старые цены\".\n\n\n";
         textArea.append(instruction);
     }
 
@@ -128,11 +128,7 @@ public class Gui implements ActionListener, PropertyChangeListener {
         int retValue = fileChooser.showDialog(null, "Открыть файл");
         if (retValue == JFileChooser.APPROVE_OPTION) {
             tableFile = fileChooser.getSelectedFile();
-            try {
-                excelFile = new ExcelFile(tableFile);
-            } catch (IOException e) {
-                textAreaLog.textAppend("Невозможно открыть файл.");
-            }
+            excelFile = new ExcelFile(tableFile, getTextAreaLog());
             textAreaLog.textAppend("Выбран файл " + tableFile.getName());
         } else {
             textAreaLog.textAppend("Выбор файла прерван.");
@@ -177,7 +173,7 @@ public class Gui implements ActionListener, PropertyChangeListener {
         try {
             desktop.open(tableFile);
         } catch (NullPointerException e) {
-            textAreaLog.textAppend("Необходимо сначала открыть таблицу и поставить цены.");
+            textAreaLog.textAppend("Необходимо сначала выбрать файл.");
         } catch (IllegalArgumentException e) {
             textAreaLog.textAppend("Файл не существует, возможно он удален или перемещен.");
         } catch (UnsupportedOperationException e) {
@@ -192,6 +188,10 @@ public class Gui implements ActionListener, PropertyChangeListener {
 
     public ExcelFile getExcelFile() {
         return excelFile;
+    }
+
+    public TextAreaLog getTextAreaLog() {
+        return textAreaLog;
     }
 
     public void makeProgressBarInvisible() {

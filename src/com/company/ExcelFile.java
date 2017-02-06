@@ -12,9 +12,11 @@ public class ExcelFile {
     private File excelFile;
     private Sheet sheet;
     private XSSFWorkbook workbook;
+    private Gui.TextAreaLog textAreaLog;
 
-    public ExcelFile(File file) throws IOException {
+    public ExcelFile(File file, Gui.TextAreaLog textAreaLog) {
         excelFile = file;
+        this.textAreaLog = textAreaLog;
         loadSheet();
     }
 
@@ -22,12 +24,17 @@ public class ExcelFile {
         return sheet;
     }
 
-    // TODO: разобраться с поимкой исключений
-    private void loadSheet() throws FileNotFoundException, IOException {
-        InputStream inputStream = new FileInputStream(excelFile);
-        // TODO: проверку на расширение(если xls, то исп. HSSFWorkbook
-        workbook = new XSSFWorkbook(inputStream);
-        sheet = workbook.getSheetAt(0);
+    private void loadSheet() {
+        try {
+            InputStream inputStream = new FileInputStream(excelFile);
+            // TODO: проверку на расширение(если xls, то исп. HSSFWorkbook
+            workbook = new XSSFWorkbook(inputStream);
+            sheet = workbook.getSheetAt(0);
+        } catch (FileNotFoundException e) {
+            textAreaLog.textAppend("Файл не найден. " + e);
+        } catch (IOException e) {
+            textAreaLog.textAppend("Невозможно прочесть файл.");
+        }
     }
 
     /**
@@ -52,52 +59,10 @@ public class ExcelFile {
     }
 
     /**
-     * Remove rows with duplicate models.
-     * and format table for import in tradex
-     *
-     * @throws IOException when file can't be saved.
-     */
-    public void removeDuplicates() throws IOException {
-        formatTable();
-        for (int i = 1; i <= sheet.getLastRowNum(); ++i) {
-            // Если артикул и цвет равны - удалить строку
-            if (getCellValue(i, 0).equals(getCellValue(i - 1, 0))
-                    && getCellValue(i, 1).equals(getCellValue(i - 1, 1))) {
-                deleteRow(i);
-                --i;
-            } else {
-                Cell cell3 = sheet.getRow(i).getCell(3);
-                //поставить "кол-во" - 1
-                cell3.setCellValue(1);
-            }
-        }
-        closeTable();
-        System.out.println("Преобразование тыблицы завершено.");
-    }
-
-    /**
      * Возвращает строку, находящуюся на пересечении номера строки и столбца
      */
     public String getCellValue(int rowNumber, int cellNumber) {
         return sheet.getRow(rowNumber).getCell(cellNumber).toString();
-    }
-
-    /**
-     * Проставляет цену для артикула(первая ячейка в строке) в пятой колонке таблицы.
-     */
-    public void putPrices() throws IOException {
-        for (int i = 1; i <= sheet.getLastRowNum(); ++i) {
-            String modelCell = sheet.getRow(i).getCell(0).toString();
-            Cell priceCell = sheet.getRow(i).createCell(4);
-            priceCell.setCellValue(QueryUtils.fetchMaxPrice(modelCell));
-            try {
-                // не знаю, как сервер отреагирует, на всякий случай
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        closeTable();
     }
 
     /**
@@ -188,10 +153,16 @@ public class ExcelFile {
         }
     }
 
-    public void closeTable() throws IOException {
-        // Write the output to a file
-        FileOutputStream fileOut = new FileOutputStream(excelFile);
-        workbook.write(fileOut);
-        fileOut.close();
+    public void closeTable() {
+        try {
+            // Write the output to a file
+            FileOutputStream fileOut = new FileOutputStream(excelFile);
+            workbook.write(fileOut);
+            fileOut.close();
+        } catch (FileNotFoundException e) {
+            textAreaLog.textAppend("По некоторым причинам файл не может быть открыт " + e);
+        } catch (IOException e) {
+            textAreaLog.textAppend("Файл не может быть сохранен." + e);
+        }
     }
 }
