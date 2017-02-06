@@ -1,6 +1,8 @@
 package com.company;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -125,6 +127,8 @@ public class Gui implements ActionListener, PropertyChangeListener {
 
     private void loadTable() {
         JFileChooser fileChooser = new JFileChooser();
+        FileFilter excelFilter = new FileNameExtensionFilter("Excel file", "xls", "xlsx");
+        fileChooser.setFileFilter(excelFilter);
         int retValue = fileChooser.showDialog(null, "Открыть файл");
         if (retValue == JFileChooser.APPROVE_OPTION) {
             tableFile = fileChooser.getSelectedFile();
