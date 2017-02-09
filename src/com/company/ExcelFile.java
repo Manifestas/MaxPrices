@@ -86,7 +86,6 @@ public class ExcelFile {
         }
         Cell count = sheet.getRow(0).getCell(3);
         count.setCellValue("Количество");
-        textAreaLog.textAppend("Преобразование окончено.");
 
     }
 

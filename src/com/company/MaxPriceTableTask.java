@@ -22,7 +22,7 @@ public class MaxPriceTableTask extends SwingWorker<Void, Void> {
         Sheet sheet = file.getSheet();
         int lastRowNum = sheet.getLastRowNum();
         for (int i = 1; i <= lastRowNum; ++i) {
-            String modelCell = sheet.getRow(i).getCell(0).toString();
+            String modelCell = sheet.getRow(i).getCell(0).getStringCellValue();
             Cell priceCell = sheet.getRow(i).createCell(4);
             priceCell.setCellValue(queryUtils.fetchMaxPrice(modelCell));
             setProgress(i * 95 / lastRowNum);

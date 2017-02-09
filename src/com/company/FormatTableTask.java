@@ -45,5 +45,6 @@ public class FormatTableTask extends SwingWorker<Void, Void> {
     protected void done() {
         super.done();
         gui.makeProgressBarInvisible();
+        gui.getTextAreaLog().textAppend("Преобразование окончено.");
     }
 }
