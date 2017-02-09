@@ -16,18 +16,27 @@ public class QueryUtils {
     private static final String MODEL_TAG = "tags%5B%5D=";
     private static final String USER_AGENT = "Mozilla/5.0";
 
-    private QueryUtils() {
+    private Gui.TextAreaLog log;
+    private String article;
+
+    public QueryUtils(Gui.TextAreaLog log) {
+        this.log = log;
     }
 
-    public static String fetchMaxPrice(String model) throws MalformedURLException,
-            IOException {
+    public String fetchMaxPrice(String model) {
+        this.article = model;
         URL url = createUrl(model);
-        String jsonResponse = makeHttpRequest(url);
+        String jsonResponse = null;
+        try {
+            jsonResponse = makeHttpRequest(url);
+        } catch (IOException e) {
+            log.textAppend("Проблема с HTTP запросом. " + e);
+        }
         String maxPrice = extractMaxPriceFromJson(jsonResponse);
         return maxPrice;
     }
 
-    private static String extractMaxPriceFromJson(String jsonResponse) {
+    private String extractMaxPriceFromJson(String jsonResponse) {
         if (jsonResponse.isEmpty()) {
             return null;
         }
@@ -37,28 +46,44 @@ public class QueryUtils {
             JSONArray products = jsonObject.getJSONArray("products");
             //if array is empty - return null;
             if (products.isNull(0)) {
+                log.textAppend(article + " не найдено!");
                 return null;
             }
-            JSONObject model = products.getJSONObject(0);
-            // if key "IS_SALE_PRICE" false - return null
-            if (!model.getBoolean("IS_SALE_PRICE")) {
-                return null;
+            for (int i = 0; i < products.length(); ++i) {
+                JSONObject model = products.getJSONObject(i);
+                JSONObject properties = model.getJSONObject("PROPERTIES");
+                JSONObject articul = properties.getJSONObject("ARTICUL");
+                String propertiesModel = articul.getString("value");
+                // убрать эскейп символ
+                propertiesModel = propertiesModel.replace("\\", "");
+                if (article.equals(propertiesModel)) {
+                    // if key "IS_SALE_PRICE" false - return null
+                    if (!model.getBoolean("IS_SALE_PRICE")) {
+                        log.textAppend(article + " не распродажная!");
+                        return null;
+                    }
+                    int maxPriceInt = model.getInt("PRICE");
+                    maxPrice = String.valueOf(maxPriceInt);
+                }
             }
-            int maxPriceInt = model.getInt("PRICE");
-            maxPrice = String.valueOf(maxPriceInt);
-            System.out.println(maxPrice);
         } catch (JSONException e) {
-            System.out.println("Problem parsing JSON results" + e);
+            log.textAppend("Проблема с парсингом JSON");
         }
         return maxPrice;
     }
 
-    private static URL createUrl(String query) throws MalformedURLException{
+    private URL createUrl(String query) {
+        URL url = null;
         URI uri = URI.create(REQUEST_URL + MODEL_TAG + query);
-        return uri.toURL();
+        try {
+            url = uri.toURL();
+        } catch (MalformedURLException e) {
+            log.textAppend("Не удалось создать URL");
+        }
+        return url;
     }
 
-    private static String makeHttpRequest(URL url) throws IOException{
+    private String makeHttpRequest(URL url) throws IOException {
         String jsonResponse = "";
         //if url is null - return early
         if (url == null) {
@@ -80,10 +105,10 @@ public class QueryUtils {
                 inputStream = connection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {
-                System.out.println("Error response code: " + connection.getResponseCode());
+                log.textAppend("Код ответа сервера: " + connection.getResponseCode());
             }
         } catch (IOException e) {
-            System.out.println("Problem retrieving json result." + e);
+            log.textAppend("Не удается получить JSON ответ от сервера. " + e);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -95,7 +120,7 @@ public class QueryUtils {
         return jsonResponse;
     }
 
-    private static String readFromStream(InputStream inputStream) throws IOException {
+    private String readFromStream(InputStream inputStream) throws IOException{
         StringBuilder builder = new StringBuilder();
         if (inputStream != null) {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");

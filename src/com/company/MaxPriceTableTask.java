@@ -9,10 +9,12 @@ public class MaxPriceTableTask extends SwingWorker<Void, Void> {
 
     private Gui gui;
     private ExcelFile file;
+    private QueryUtils queryUtils;
 
     public MaxPriceTableTask(Gui gui) {
         this.gui = gui;
         file = gui.getExcelFile();
+        queryUtils = new QueryUtils(gui.getTextAreaLog());
     }
 
     @Override
@@ -22,7 +24,7 @@ public class MaxPriceTableTask extends SwingWorker<Void, Void> {
         for (int i = 1; i <= lastRowNum; ++i) {
             String modelCell = sheet.getRow(i).getCell(0).toString();
             Cell priceCell = sheet.getRow(i).createCell(4);
-            priceCell.setCellValue(QueryUtils.fetchMaxPrice(modelCell));
+            priceCell.setCellValue(queryUtils.fetchMaxPrice(modelCell));
             setProgress(i * 95 / lastRowNum);
             try {
                 // не знаю, как сервер отреагирует, на всякий случай

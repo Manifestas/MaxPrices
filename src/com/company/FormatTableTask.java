@@ -38,7 +38,6 @@ public class FormatTableTask extends SwingWorker<Void, Void> {
         setProgress(90);
         file.closeTable();
         setProgress(100);
-        System.out.println("Преобразование тыблицы завершено.");
         return null;
     }
 

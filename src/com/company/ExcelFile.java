@@ -78,6 +78,7 @@ public class ExcelFile {
      * меняет название стобца "Кол-во" на "Количество"
      */
     public void formatTable() {
+        textAreaLog.textAppend("Начало преобразования таблицы.");
         deleteColumn(sheet, 3);
         //удалить 4-7 столбцы(они смещаются налево, поэтому один номер
         for (int i = 0; i < 4; ++i) {
@@ -85,6 +86,7 @@ public class ExcelFile {
         }
         Cell count = sheet.getRow(0).getCell(3);
         count.setCellValue("Количество");
+        textAreaLog.textAppend("Преобразование окончено.");
 
     }
 
@@ -172,6 +174,7 @@ public class ExcelFile {
         } catch (IOException e) {
             textAreaLog.textAppend("Файл не может быть сохранен." + e);
         }
+        textAreaLog.textAppend("Сохранение таблицы.");
     }
 
     private String getFileExtension(File file) {
