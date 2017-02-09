@@ -42,5 +42,6 @@ public class MaxPriceTableTask extends SwingWorker<Void, Void> {
     protected void done() {
         super.done();
         gui.makeProgressBarInvisible();
+        gui.getTextAreaLog().textAppend("Постановка цен закончена.");
     }
 }
