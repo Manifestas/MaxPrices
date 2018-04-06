@@ -27,8 +27,8 @@ public class FormatTableTask extends SwingWorker<Void, Void> {
                     && file.getCellValue(i, 1).equals(file.getCellValue(i - 1, 1))) {
                 file.deleteRow(i);
                 lastRowNum = sheet.getLastRowNum();
-                setProgress(i * 80 / lastRowNum + 10);
                 --i;
+                setProgress(i * 80 / lastRowNum + 10);
             } else {
                 Cell cell3 = sheet.getRow(i).getCell(3);
                 //поставить "кол-во" - 1
