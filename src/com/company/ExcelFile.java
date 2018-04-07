@@ -46,9 +46,9 @@ public class ExcelFile {
     }
 
     /**
-     * Remove(shift) row.
+     * Удалить строку
      *
-     * @param rowNo row number to be deleted
+     * @param rowNo номер строки, которую нужно удалить
      */
     public void deleteRow(int rowNo) {
         if (sheet == null) {

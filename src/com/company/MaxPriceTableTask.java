@@ -21,13 +21,16 @@ public class MaxPriceTableTask extends SwingWorker<Void, Void> {
     protected Void doInBackground() throws Exception {
         Sheet sheet = file.getSheet();
         int lastRowNum = sheet.getLastRowNum();
+        // перебрать все строки в таблице, кроме первой
         for (int i = 1; i <= lastRowNum; ++i) {
+            // взять название модели
             String modelCell = sheet.getRow(i).getCell(0).getStringCellValue();
             Cell priceCell = sheet.getRow(i).createCell(4);
+            // получить с сайта значение макс. цены и поставить в ячейку
             priceCell.setCellValue(queryUtils.fetchMaxPrice(modelCell));
             setProgress(i * 95 / lastRowNum);
             try {
-                // не знаю, как сервер отреагирует, на всякий случай
+                // без паузы были проблемы с ответом
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
