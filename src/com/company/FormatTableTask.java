@@ -21,13 +21,13 @@ public class FormatTableTask extends SwingWorker<Void, Void> {
         setProgress(10);
         Sheet sheet = file.getSheet();
         int lastRowNum = sheet.getLastRowNum();
-        for (int i = 1; i <= lastRowNum; ++i) {
+        for (int i = 1; i <= lastRowNum; i++) {
             // Если артикул и цвет равны - удалить строку
             if (file.getCellValue(i, 0).equals(file.getCellValue(i - 1, 0))
                     && file.getCellValue(i, 1).equals(file.getCellValue(i - 1, 1))) {
                 file.deleteRow(i);
-                lastRowNum = sheet.getLastRowNum();
-                --i;
+                lastRowNum--;
+                i--;
                 setProgress(i * 80 / lastRowNum + 10);
             } else {
                 Cell cell3 = sheet.getRow(i).getCell(3);
