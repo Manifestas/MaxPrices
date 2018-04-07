@@ -22,9 +22,12 @@ public class FormatTableTask extends SwingWorker<Void, Void> {
         Sheet sheet = file.getSheet();
         int lastRowNum = sheet.getLastRowNum();
         for (int i = 1; i <= lastRowNum; i++) {
+            String currentArticle = file.getCellValue(i, 0);
+            String currentColor = file.getCellValue(i, 1);
+            String previousArticle = file.getCellValue(i - 1, 0);
+            String previousColor = file.getCellValue(i - 1, 0);
             // Если артикул и цвет равны - удалить строку
-            if (file.getCellValue(i, 0).equals(file.getCellValue(i - 1, 0))
-                    && file.getCellValue(i, 1).equals(file.getCellValue(i - 1, 1))) {
+            if (currentArticle.equals(previousArticle) && currentColor.equals(previousColor)) {
                 file.deleteRow(i);
                 lastRowNum--;
                 i--;
