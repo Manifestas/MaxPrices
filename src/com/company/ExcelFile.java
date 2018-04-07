@@ -98,10 +98,10 @@ public class ExcelFile {
     }
 
     /**
-     * Given a sheet, this method deletes a column from a sheet and moves
-     * all the columns to the right of it to the left one cell.
+     * Удаляет в указанной таблице столбец с указанным номером,
+     * перемещая все данные из левого столбца на место удаленного.
      * <p>
-     * Note, this method will not update any formula references.
+     * Примечание: не обновляет формулы
      */
     private static void deleteColumn(Sheet sheet, int columnToDelete) {
         int maxColumn = 0;
@@ -139,8 +139,7 @@ public class ExcelFile {
     }
 
     /**
-     * Takes an existing Cell and merges all the styles and formula
-     * into the new one
+     * Берет все данные и формулы из старой ячейки и переносит в новую
      */
     private static void cloneCell(Cell cNew, Cell cOld) {
         cNew.setCellComment(cOld.getCellComment());
@@ -170,9 +169,11 @@ public class ExcelFile {
         }
     }
 
+    /**
+     * Сохраняет(перезаписывает) таблицу на жесткий диск.
+     */
     public void closeTable() {
         try {
-            // Write the output to a file
             FileOutputStream fileOut = new FileOutputStream(excelFile);
             workbook.write(fileOut);
             fileOut.close();
@@ -188,6 +189,7 @@ public class ExcelFile {
         String fileName = file.getName();
         if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
             return fileName.substring(fileName.lastIndexOf(".") + 1);
-        else return "";
+        else
+            return "";
     }
 }
