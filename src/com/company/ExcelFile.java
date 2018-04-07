@@ -37,6 +37,7 @@ public class ExcelFile {
                 textAreaLog.textAppend("Файл должен быть с расширением xls или xlsx");
                 return;
             }
+            // таблица на первом листе
             sheet = workbook.getSheetAt(0);
         } catch (FileNotFoundException e) {
             textAreaLog.textAppend("Файл не найден. " + e);
@@ -80,6 +81,11 @@ public class ExcelFile {
      */
     public void formatTable() {
         textAreaLog.textAppend("Начало преобразования таблицы.");
+        // если в таблице меньше трех строк
+        if (sheet.getLastRowNum() < 3) {
+            textAreaLog.textAppend("В таблице отсутствуют данные");
+            return;
+        }
         //удалить столбец "Название"
         deleteColumn(sheet, 3);
         //удалить 4-8 столбцы(они смещаются налево, поэтому один номер
