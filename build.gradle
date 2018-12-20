@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'edu.sc.seis.launch4j' version '2.4.4'
 }
 
 sourceCompatibility = 1.8
@@ -14,10 +15,36 @@ dependencies {
     compile group: 'org.apache.poi', name: 'poi', version: '4.0.1'
     compile group: 'org.apache.poi', name: 'poi-ooxml', version: '4.0.1'
     compile group: 'org.json', name: 'json', version: '20180813'
-    
+
     testImplementation 'junit:junit:4.12'
 }
 
 mainClassName = 'com.company.Main'
 
 compileJava.options.encoding = 'UTF-8'
+
+jar {
+    baseName = applicationName
+    
+    // make one .exe file without libs folder
+    doFirst {
+        from {
+            configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        }
+    }
+
+    // Remove digital signature files to ensure an executable JAR file.
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+
+    manifest {
+        attributes 'Main-Class': mainClassName
+        attributes 'Class-Path': configurations.compile.collect {
+            'libs/' + it.getName()
+        }.join(' ')
+    }
+}
+
+launch4j {
+    mainClassName = mainClassName
+    icon = "${projectDir}/src/main/resources/icons/maxP.ico"
+}
