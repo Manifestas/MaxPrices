@@ -1,7 +1,12 @@
-package com.company;
+package com.company.view;
+
+import com.company.exceptions.FileChoosingInterruptedException;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.io.File;
 
 public class View {
 
@@ -90,6 +95,18 @@ public class View {
                 "11. Скопировать ячейки с ценами.\n" +
                 "12. Вставить в TradeX в столбец \"Старые цены\".\n\n\n";
         addTextToTextArea(instruction);
+    }
+
+    public File showFileChooser() throws FileChoosingInterruptedException{
+        JFileChooser fileChooser = new JFileChooser();
+        FileFilter excelFilter = new FileNameExtensionFilter("Excel file", "xls", "xlsx");
+        fileChooser.setFileFilter(excelFilter);
+        int retValue = fileChooser.showDialog(null, "Открыть файл");
+        if (retValue == JFileChooser.APPROVE_OPTION) {
+            return fileChooser.getSelectedFile();
+        } else {
+            throw new FileChoosingInterruptedException();
+        }
     }
 
     public JButton getLoadTableButton() {
