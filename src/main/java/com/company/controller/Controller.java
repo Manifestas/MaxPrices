@@ -1,19 +1,23 @@
-package com.company;
+package com.company.controller;
 
+import com.company.ExcelFile;
 import com.company.exceptions.FileChoosingInterruptedException;
 import com.company.view.View;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class Controller implements ActionListener {
 
     private View view;
-    private File tableFile;
+    private ExcelFile excelFile;
 
     public Controller(View view) {
         this.view = view;
+        setOnclickListenerForButtons();
     }
 
     private void setOnclickListenerForButtons() {
@@ -29,8 +33,7 @@ public class Controller implements ActionListener {
     public void actionPerformed(ActionEvent actionEvent) {
         Object button = actionEvent.getSource();
         if (button == view.getLoadTableButton()) {
-            loadTable();
-
+            loadTableFile();
         } else if (button == view.getRemoveDuplicatesButton()) {
 
         } else if (button == view.getProcessButton()) {
@@ -44,12 +47,21 @@ public class Controller implements ActionListener {
         }
     }
 
-    private void loadTable() {
+    private void loadTableFile() {
         try {
-            tableFile = view.showFileChooser();
+            File tableFile = view.showFileChooser();
             view.addTextToTextArea("Выбран файл: " + tableFile.getName());
+            excelFile = new ExcelFile(tableFile);
+            boolean isLoaded = excelFile.loadSheet();
+            if (!isLoaded) {
+                view.addTextToTextArea("Файл должен быть с расширением xls или xlsx");
+            }
         } catch (FileChoosingInterruptedException e) {
             view.addTextToTextArea("Выбор файла прерван.");
+        } catch (FileNotFoundException e) {
+            view.addTextToTextArea("Файл не найден. " + e);
+        } catch (IOException e) {
+            view.addTextToTextArea("Невозможно прочесть файл.");
         }
     }
 }

@@ -16,34 +16,98 @@ public class ExcelFile {
     private Workbook workbook;
     private Gui.TextAreaLog textAreaLog;
 
-    public ExcelFile(File file, Gui.TextAreaLog textAreaLog) {
+    public ExcelFile(File file) {
         excelFile = file;
-        this.textAreaLog = textAreaLog;
-        loadSheet();
+    }
+
+    /**
+     * Удаляет в указанной таблице столбец с указанным номером,
+     * перемещая все данные из левого столбца на место удаленного.
+     * <p>
+     * Примечание: не обновляет формулы
+     */
+    private static void deleteColumn(Sheet sheet, int columnToDelete) {
+        int maxColumn = 0;
+        for (int r = 0; r < sheet.getLastRowNum() + 1; r++) {
+            Row row = sheet.getRow(r);
+
+            // если здесь нет строки - переходить к следующей
+            if (row == null)
+                continue;
+
+            // если в строке столбцов меньше - переход к следующей
+            int lastColumn = row.getLastCellNum();
+            if (lastColumn > maxColumn)
+                maxColumn = lastColumn;
+
+            if (lastColumn < columnToDelete)
+                continue;
+
+            for (int x = columnToDelete + 1; x < lastColumn + 1; x++) {
+                Cell oldCell = row.getCell(x - 1);
+                if (oldCell != null)
+                    row.removeCell(oldCell);
+
+                Cell nextCell = row.getCell(x);
+                if (nextCell != null) {
+                    Cell newCell = row.createCell(x - 1, nextCell.getCellType());
+                    cloneCell(newCell, nextCell);
+                }
+            }
+        }
+        // отрегулировать ширину столбца
+        for (int c = 0; c < maxColumn; c++) {
+            sheet.setColumnWidth(c, sheet.getColumnWidth(c + 1));
+        }
+    }
+
+    /**
+     * Берет все данные и формулы из старой ячейки и переносит в новую
+     */
+    private static void cloneCell(Cell newCell, Cell oldCell) {
+        newCell.setCellComment(oldCell.getCellComment());
+        newCell.setCellStyle(oldCell.getCellStyle());
+
+        switch (newCell.getCellType()) {
+            case BOOLEAN: {
+                newCell.setCellValue(oldCell.getBooleanCellValue());
+                break;
+            }
+            case NUMERIC: {
+                newCell.setCellValue(oldCell.getNumericCellValue());
+                break;
+            }
+            case STRING: {
+                newCell.setCellValue(oldCell.getStringCellValue());
+                break;
+            }
+            case ERROR: {
+                newCell.setCellValue(oldCell.getErrorCellValue());
+                break;
+            }
+            case FORMULA: {
+                newCell.setCellFormula(oldCell.getCellFormula());
+                break;
+            }
+        }
     }
 
     public Sheet getSheet() {
         return sheet;
     }
 
-    private void loadSheet() {
-        try {
-            InputStream inputStream = new FileInputStream(excelFile);
-            if (getFileExtension(excelFile).equalsIgnoreCase("xls")) {
-                workbook = new HSSFWorkbook(inputStream);
-            } else if (getFileExtension(excelFile).equalsIgnoreCase("xlsx")) {
-                workbook = new XSSFWorkbook(inputStream);
-            } else {
-                textAreaLog.textAppend("Файл должен быть с расширением xls или xlsx");
-                return;
-            }
-            // таблица на первом листе
-            sheet = workbook.getSheetAt(0);
-        } catch (FileNotFoundException e) {
-            textAreaLog.textAppend("Файл не найден. " + e);
-        } catch (IOException e) {
-            textAreaLog.textAppend("Невозможно прочесть файл.");
+    public boolean loadSheet() throws IOException {
+        InputStream inputStream = new FileInputStream(excelFile);
+        if (getFileExtension(excelFile).equalsIgnoreCase("xls")) {
+            workbook = new HSSFWorkbook(inputStream);
+        } else if (getFileExtension(excelFile).equalsIgnoreCase("xlsx")) {
+            workbook = new XSSFWorkbook(inputStream);
+        } else {
+            return false;
         }
+        // таблица на первом листе
+        sheet = workbook.getSheetAt(0);
+        return true;
     }
 
     /**
@@ -102,78 +166,6 @@ public class ExcelFile {
         Cell count = sheet.getRow(0).getCell(3);
         count.setCellValue("Количество");
 
-    }
-
-    /**
-     * Удаляет в указанной таблице столбец с указанным номером,
-     * перемещая все данные из левого столбца на место удаленного.
-     * <p>
-     * Примечание: не обновляет формулы
-     */
-    private static void deleteColumn(Sheet sheet, int columnToDelete) {
-        int maxColumn = 0;
-        for (int r = 0; r < sheet.getLastRowNum() + 1; r++) {
-            Row row = sheet.getRow(r);
-
-            // if no row exists here; then nothing to do; next!
-            if (row == null)
-                continue;
-
-            // if the row doesn't have this many columns then we are good; next!
-            int lastColumn = row.getLastCellNum();
-            if (lastColumn > maxColumn)
-                maxColumn = lastColumn;
-
-            if (lastColumn < columnToDelete)
-                continue;
-
-            for (int x = columnToDelete + 1; x < lastColumn + 1; x++) {
-                Cell oldCell = row.getCell(x - 1);
-                if (oldCell != null)
-                    row.removeCell(oldCell);
-
-                Cell nextCell = row.getCell(x);
-                if (nextCell != null) {
-                    Cell newCell = row.createCell(x - 1, nextCell.getCellType());
-                    cloneCell(newCell, nextCell);
-                }
-            }
-        }
-        // Adjust the column widths
-        for (int c = 0; c < maxColumn; c++) {
-            sheet.setColumnWidth(c, sheet.getColumnWidth(c + 1));
-        }
-    }
-
-    /**
-     * Берет все данные и формулы из старой ячейки и переносит в новую
-     */
-    private static void cloneCell(Cell cNew, Cell cOld) {
-        cNew.setCellComment(cOld.getCellComment());
-        cNew.setCellStyle(cOld.getCellStyle());
-
-        switch (cNew.getCellTypeEnum()) {
-            case BOOLEAN: {
-                cNew.setCellValue(cOld.getBooleanCellValue());
-                break;
-            }
-            case NUMERIC: {
-                cNew.setCellValue(cOld.getNumericCellValue());
-                break;
-            }
-            case STRING: {
-                cNew.setCellValue(cOld.getStringCellValue());
-                break;
-            }
-            case ERROR: {
-                cNew.setCellValue(cOld.getErrorCellValue());
-                break;
-            }
-            case FORMULA: {
-                cNew.setCellFormula(cOld.getCellFormula());
-                break;
-            }
-        }
     }
 
     /**
