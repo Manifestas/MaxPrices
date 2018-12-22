@@ -1,5 +1,8 @@
-package com.company;
+package com.company.tasks;
 
+import com.company.ExcelFile;
+import com.company.Gui;
+import com.company.QueryUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 
