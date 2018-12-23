@@ -31,6 +31,9 @@ public class QueryUtils {
             messageListener.onMessage("Проблема с HTTP запросом. " + e);
         }
         String maxPrice = extractMaxPriceFromJson(jsonResponse);
+        if (maxPrice == null) {
+            messageListener.onMessage(model + " не найдено");
+        }
         return maxPrice;
     }
 
