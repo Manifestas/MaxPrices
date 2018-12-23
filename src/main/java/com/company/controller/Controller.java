@@ -23,6 +23,7 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
 
     private View view;
     private ExcelFile excelFile;
+    private StateValue state = StateValue.PENDING;
 
     public Controller(View view) {
         this.view = view;
@@ -141,6 +142,18 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
     @Override
     public void onMessage(String s) {
         SwingUtilities.invokeLater(() -> view.addTextToTextArea(s));
+    }
+
+    public enum StateValue {
+
+        /** Initial Controller state. */
+        PENDING,
+        /** When starts loading ExcelFile in memory. */
+        LOADING_FILE,
+        /** Removing duplicates from file. */
+        REMOVING_DUPLICATES,
+        /** Requesting prices from internet and saving to file. */
+        PROCESSING
     }
 
 }
