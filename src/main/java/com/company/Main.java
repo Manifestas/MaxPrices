@@ -1,5 +1,8 @@
 package com.company;
 
+import com.company.controller.Controller;
+import com.company.view.View;
+
 import javax.swing.*;
 
 public class Main {
@@ -12,11 +15,6 @@ public class Main {
             e.printStackTrace();
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new Gui().initUi();
-            }
-        });
+        SwingUtilities.invokeLater(() -> new Controller(new View()));
     }
 }
