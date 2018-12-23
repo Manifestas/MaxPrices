@@ -49,7 +49,7 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
         } else if (button == view.getShowTableButton()) {
             openFile();
         } else if (button == view.getShowInstructionButton()) {
-
+            view.writeInstruction();
         } else if (button == view.getExitButton()) {
 
         }
