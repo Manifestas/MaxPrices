@@ -91,6 +91,12 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
             int progress = (Integer) evt.getNewValue();
             view.setProgressBarValue(progress);
         }
+        if (evt.getSource() instanceof FormatTableTask) {
+            if ("state".equals(evt.getPropertyName()) && SwingWorker.StateValue.DONE == evt.getNewValue()) {
+                view.addTextToTextArea("Преобразование таблицы окончено.");
+                view.hideProgressBar();
+            }
+        }
     }
 
     @Override

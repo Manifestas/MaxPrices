@@ -1,24 +1,21 @@
 package com.company.tasks;
 
 import com.company.ExcelFile;
-import com.company.Gui;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 
 import javax.swing.*;
-import java.io.IOException;
 
 public class FormatTableTask extends SwingWorker<Void, Void> {
 
-    private Gui gui;
     private ExcelFile file;
 
-    public FormatTableTask(Gui gui) {
-        this.gui = gui;
-        file = gui.getExcelFile();
+    public FormatTableTask(ExcelFile excelFile) {
+        file = excelFile;
     }
+
     @Override
-    protected Void doInBackground() throws IOException {
+    protected Void doInBackground() {
         file.formatTable();
         setProgress(10);
         Sheet sheet = file.getSheet();
@@ -44,12 +41,5 @@ public class FormatTableTask extends SwingWorker<Void, Void> {
         file.closeTable();
         setProgress(100);
         return null;
-    }
-
-    @Override
-    protected void done() {
-        super.done();
-        gui.makeProgressBarInvisible();
-        gui.getTextAreaLog().textAppend("Преобразование окончено.");
     }
 }
