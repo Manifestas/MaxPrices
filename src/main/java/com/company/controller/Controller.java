@@ -23,6 +23,8 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
 
     private View view;
     private ExcelFile excelFile;
+    private FormatTableTask formatTableTask;
+    private MaxPriceTableTask maxPriceTableTask;
     private StateValue state = StateValue.PENDING;
 
     public Controller(View view) {
@@ -43,9 +45,17 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
         if (button == view.getLoadTableButton()) {
             loadTableFile();
         } else if (button == view.getRemoveDuplicatesButton()) {
-            removeDuplicates();
+            if (state == StateValue.PENDING) {
+                removeDuplicates();
+            } else if (state == StateValue.REMOVING_DUPLICATES && formatTableTask != null) {
+                formatTableTask.cancel(true);
+            }
         } else if (button == view.getProcessButton()) {
-            process();
+            if (state == StateValue.PENDING) {
+                process();
+            } else if (state == StateValue.PROCESSING && maxPriceTableTask != null) {
+                maxPriceTableTask.cancel(true);
+            }
         } else if (button == view.getShowTableButton()) {
             openFile();
         } else if (button == view.getShowInstructionButton()) {
@@ -92,7 +102,7 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
             view.showProgressBar();
             view.setProgressBarValue(0);
 
-            FormatTableTask formatTableTask = new FormatTableTask(excelFile);
+            formatTableTask = new FormatTableTask(excelFile);
             formatTableTask.addPropertyChangeListener(this);
             formatTableTask.execute();
         }
@@ -110,7 +120,7 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
             view.setProgressBarValue(0);
 
             QueryUtils queryUtils = new QueryUtils(this);
-            MaxPriceTableTask maxPriceTableTask = new MaxPriceTableTask(excelFile, queryUtils);
+            maxPriceTableTask = new MaxPriceTableTask(excelFile, queryUtils);
             maxPriceTableTask.addPropertyChangeListener(this);
             maxPriceTableTask.execute();
         }

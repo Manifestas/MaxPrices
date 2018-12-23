@@ -21,6 +21,9 @@ public class FormatTableTask extends SwingWorker<Void, Void> {
         Sheet sheet = file.getSheet();
         int lastRowNum = sheet.getLastRowNum();
         for (int i = 1; i <= lastRowNum; i++) {
+            if (isCancelled()) {
+                return null;
+            }
             String currentArticle = file.getCellValue(i, 0);
             String currentColor = file.getCellValue(i, 1);
             String previousArticle = file.getCellValue(i - 1, 0);

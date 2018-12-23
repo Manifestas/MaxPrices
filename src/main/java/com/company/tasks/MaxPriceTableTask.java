@@ -23,6 +23,9 @@ public class MaxPriceTableTask extends SwingWorker<Void, Void> {
         int lastRowNum = sheet.getLastRowNum();
         // перебрать все строки в таблице, кроме первой
         for (int i = 1; i <= lastRowNum; ++i) {
+            if (isCancelled()) {
+                return null;
+            }
             // взять название модели
             String modelCell = sheet.getRow(i).getCell(0).getStringCellValue();
             Cell priceCell = sheet.getRow(i).createCell(4);
@@ -33,7 +36,7 @@ public class MaxPriceTableTask extends SwingWorker<Void, Void> {
                 // без паузы были проблемы с ответом
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                return null;
             }
         }
         setProgress(95);
