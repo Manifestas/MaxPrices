@@ -1,16 +1,21 @@
 package com.company.controller;
 
 import com.company.ExcelFile;
+import com.company.MessageListener;
 import com.company.exceptions.FileChoosingInterruptedException;
+import com.company.tasks.FormatTableTask;
 import com.company.view.View;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class Controller implements ActionListener {
+public class Controller implements ActionListener, PropertyChangeListener, MessageListener {
 
     private View view;
     private ExcelFile excelFile;
@@ -35,7 +40,7 @@ public class Controller implements ActionListener {
         if (button == view.getLoadTableButton()) {
             loadTableFile();
         } else if (button == view.getRemoveDuplicatesButton()) {
-
+            removeDuplicates();
         } else if (button == view.getProcessButton()) {
 
         } else if (button == view.getShowTableButton()) {
@@ -55,6 +60,9 @@ public class Controller implements ActionListener {
             boolean isLoaded = excelFile.loadSheet();
             if (!isLoaded) {
                 view.addTextToTextArea("Файл должен быть с расширением xls или xlsx");
+                excelFile = null;
+            } else {
+                excelFile.setMessageListener(this);
             }
         } catch (FileChoosingInterruptedException e) {
             view.addTextToTextArea("Выбор файла прерван.");
@@ -63,5 +71,30 @@ public class Controller implements ActionListener {
         } catch (IOException e) {
             view.addTextToTextArea("Невозможно прочесть файл.");
         }
+    }
+
+    private void removeDuplicates() {
+        if (excelFile == null) {
+            view.addTextToTextArea("Сначала необходимо загрузить таблицу.");
+        } else {
+            view.showProgressBar();
+            view.setProgressBarValue(0);
+            FormatTableTask formatTableTask = new FormatTableTask(excelFile);
+            formatTableTask.addPropertyChangeListener(this);
+            formatTableTask.execute();
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equalsIgnoreCase("progress")) {
+            int progress = (Integer) evt.getNewValue();
+            view.setProgressBarValue(progress);
+        }
+    }
+
+    @Override
+    public void onMessage(String s) {
+        SwingUtilities.invokeLater(() -> view.addTextToTextArea(s));
     }
 }

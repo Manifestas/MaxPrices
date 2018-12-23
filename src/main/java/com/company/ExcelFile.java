@@ -14,7 +14,7 @@ public class ExcelFile {
     private File excelFile;
     private Sheet sheet;
     private Workbook workbook;
-    private Gui.TextAreaLog textAreaLog;
+    private MessageListener messageListener;
 
     public ExcelFile(File file) {
         excelFile = file;
@@ -92,6 +92,10 @@ public class ExcelFile {
         }
     }
 
+    public void setMessageListener(MessageListener listener) {
+        messageListener = listener;
+    }
+
     public Sheet getSheet() {
         return sheet;
     }
@@ -144,16 +148,16 @@ public class ExcelFile {
      * импортирования в TradeX
      */
     public void formatTable() {
-        textAreaLog.textAppend("Начало преобразования таблицы.");
+        messageListener.onMessage("Начало преобразования таблицы.");
         // если в таблице меньше трех строк
         if (sheet.getLastRowNum() < 3) {
-            textAreaLog.textAppend("В таблице отсутствуют данные");
+            messageListener.onMessage("В таблице отсутствуют данные");
             return;
         }
         // если значение в четвертой колонке пустое- таблица скорее всего уже отформатирована
         // счет столбцов начинается с единицы
         if (sheet.getRow(0).getLastCellNum() <= 3) {
-            textAreaLog.textAppend("Таблица уже прошла обработку");
+            messageListener.onMessage("Таблица уже прошла обработку");
             return;
         }
 
@@ -177,11 +181,11 @@ public class ExcelFile {
             workbook.write(fileOut);
             fileOut.close();
         } catch (FileNotFoundException e) {
-            textAreaLog.textAppend("По некоторым причинам файл не может быть открыт " + e);
+            messageListener.onMessage("По некоторым причинам файл не может быть открыт " + e);
         } catch (IOException e) {
-            textAreaLog.textAppend("Файл не может быть сохранен." + e);
+            messageListener.onMessage("Файл не может быть сохранен." + e);
         }
-        textAreaLog.textAppend("Сохранение таблицы.");
+        messageListener.onMessage("Сохранение таблицы.");
     }
 
     private String getFileExtension(File file) {
