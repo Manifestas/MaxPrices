@@ -127,6 +127,20 @@ public class View {
         progressBar.setValue(n);
     }
 
+    public void disableAllButtonsExcept(JButton enabledJButton) {
+        for (JButton each : allButtons) {
+            if (each != enabledJButton) {
+                each.setEnabled(false);
+            }
+        }
+    }
+
+    public void enableAllButtons() {
+        for (JButton each : allButtons) {
+            each.setEnabled(true);
+        }
+    }
+
     public JButton getLoadTableButton() {
         return loadTableButton;
     }

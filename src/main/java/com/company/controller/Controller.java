@@ -57,6 +57,9 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
 
     private void loadTableFile() {
         try {
+            state = StateValue.LOADING_FILE;
+            view.disableAllButtonsExcept(null);
+
             File tableFile = view.showFileChooser();
             view.addTextToTextArea("Выбран файл: " + tableFile.getName());
             excelFile = new ExcelFile(tableFile);
@@ -74,14 +77,21 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
         } catch (IOException e) {
             view.addTextToTextArea("Невозможно прочесть файл.");
         }
+        state = StateValue.PENDING;
+        view.enableAllButtons();
     }
 
     private void removeDuplicates() {
         if (excelFile == null) {
             view.addTextToTextArea("Сначала необходимо загрузить таблицу.");
         } else {
+            state = StateValue.REMOVING_DUPLICATES;
+            JButton removeDuplicates = view.getRemoveDuplicatesButton();
+            removeDuplicates.setText("Остановить");
+            view.disableAllButtonsExcept(removeDuplicates);
             view.showProgressBar();
             view.setProgressBarValue(0);
+
             FormatTableTask formatTableTask = new FormatTableTask(excelFile);
             formatTableTask.addPropertyChangeListener(this);
             formatTableTask.execute();
@@ -92,8 +102,13 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
         if (excelFile == null) {
             view.addTextToTextArea("Сначала необходимо загрузить таблицу.");
         } else {
+            state = StateValue.PROCESSING;
+            JButton processButton = view.getProcessButton();
+            processButton.setText("Остановить");
+            view.disableAllButtonsExcept(processButton);
             view.showProgressBar();
             view.setProgressBarValue(0);
+
             QueryUtils queryUtils = new QueryUtils(this);
             MaxPriceTableTask maxPriceTableTask = new MaxPriceTableTask(excelFile, queryUtils);
             maxPriceTableTask.addPropertyChangeListener(this);
@@ -129,12 +144,18 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
             if ("state".equals(evt.getPropertyName()) && SwingWorker.StateValue.DONE == evt.getNewValue()) {
                 view.addTextToTextArea("Преобразование таблицы окончено.");
                 view.hideProgressBar();
+                view.getRemoveDuplicatesButton().setText("Удалить дубликаты");
+                view.enableAllButtons();
+                state = StateValue.PENDING;
             }
         }
         if (evt.getSource() instanceof MaxPriceTableTask) {
             if ("state".equals(evt.getPropertyName()) && SwingWorker.StateValue.DONE == evt.getNewValue()) {
                 view.addTextToTextArea("Постановка цен закончена.");
                 view.hideProgressBar();
+                view.getProcessButton().setText("Поставить цены");
+                view.enableAllButtons();
+                state = StateValue.PENDING;
             }
         }
     }
