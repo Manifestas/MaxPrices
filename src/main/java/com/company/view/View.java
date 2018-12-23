@@ -109,6 +109,18 @@ public class View {
         }
     }
 
+    public void hideProgressBar() {
+        progressBar.setVisible(false);
+    }
+
+    public void showProgressBar() {
+        progressBar.setVisible(true);
+    }
+
+    public void setProgressBarValue(int n) {
+        progressBar.setValue(n);
+    }
+
     public JButton getLoadTableButton() {
         return loadTableButton;
     }
