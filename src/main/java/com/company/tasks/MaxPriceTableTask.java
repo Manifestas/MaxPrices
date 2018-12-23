@@ -1,7 +1,6 @@
 package com.company.tasks;
 
 import com.company.ExcelFile;
-import com.company.Gui;
 import com.company.QueryUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -10,14 +9,12 @@ import javax.swing.*;
 
 public class MaxPriceTableTask extends SwingWorker<Void, Void> {
 
-    private Gui gui;
     private ExcelFile file;
     private QueryUtils queryUtils;
 
-    public MaxPriceTableTask(Gui gui) {
-        this.gui = gui;
-        file = gui.getExcelFile();
-        queryUtils = new QueryUtils(gui.getTextAreaLog());
+    public MaxPriceTableTask(ExcelFile excelFile, QueryUtils queryUtils) {
+        file = excelFile;
+        this.queryUtils = queryUtils;
     }
 
     @Override
@@ -42,12 +39,5 @@ public class MaxPriceTableTask extends SwingWorker<Void, Void> {
         setProgress(95);
         file.closeTable();
         return null;
-    }
-
-    @Override
-    protected void done() {
-        super.done();
-        gui.makeProgressBarInvisible();
-        gui.getTextAreaLog().textAppend("Постановка цен закончена.");
     }
 }

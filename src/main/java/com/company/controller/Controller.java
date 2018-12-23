@@ -2,8 +2,10 @@ package com.company.controller;
 
 import com.company.ExcelFile;
 import com.company.MessageListener;
+import com.company.QueryUtils;
 import com.company.exceptions.FileChoosingInterruptedException;
 import com.company.tasks.FormatTableTask;
+import com.company.tasks.MaxPriceTableTask;
 import com.company.view.View;
 
 import javax.swing.*;
@@ -42,7 +44,7 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
         } else if (button == view.getRemoveDuplicatesButton()) {
             removeDuplicates();
         } else if (button == view.getProcessButton()) {
-
+            process();
         } else if (button == view.getShowTableButton()) {
 
         } else if (button == view.getShowInstructionButton()) {
@@ -85,6 +87,19 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
         }
     }
 
+    private void process() {
+        if (excelFile == null) {
+            view.addTextToTextArea("Сначала необходимо загрузить таблицу.");
+        } else {
+            view.showProgressBar();
+            view.setProgressBarValue(0);
+            QueryUtils queryUtils = new QueryUtils(this);
+            MaxPriceTableTask maxPriceTableTask = new MaxPriceTableTask(excelFile, queryUtils);
+            maxPriceTableTask.addPropertyChangeListener(this);
+            maxPriceTableTask.execute();
+        }
+    }
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equalsIgnoreCase("progress")) {
@@ -97,10 +112,17 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
                 view.hideProgressBar();
             }
         }
+        if (evt.getSource() instanceof MaxPriceTableTask) {
+            if ("state".equals(evt.getPropertyName()) && SwingWorker.StateValue.DONE == evt.getNewValue()) {
+                view.addTextToTextArea("Постановка цен закончена.");
+                view.hideProgressBar();
+            }
+        }
     }
 
     @Override
     public void onMessage(String s) {
         SwingUtilities.invokeLater(() -> view.addTextToTextArea(s));
     }
+
 }
