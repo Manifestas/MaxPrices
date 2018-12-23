@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class QueryUtils {
 
@@ -16,11 +17,11 @@ public class QueryUtils {
     private static final String MODEL_TAG = "tags%5B%5D=";
     private static final String USER_AGENT = "Mozilla/5.0";
 
-    private Gui.TextAreaLog log;
     private String article;
+    private MessageListener messageListener;
 
-    public QueryUtils(Gui.TextAreaLog log) {
-        this.log = log;
+    public QueryUtils(MessageListener listener) {
+        messageListener = listener;
     }
 
     public String fetchMaxPrice(String model) {
@@ -30,14 +31,14 @@ public class QueryUtils {
         try {
             jsonResponse = makeHttpRequest(url);
         } catch (IOException e) {
-            log.textAppend("Проблема с HTTP запросом. " + e);
+            messageListener.onMessage("Проблема с HTTP запросом. " + e);
         }
         String maxPrice = extractMaxPriceFromJson(jsonResponse);
         return maxPrice;
     }
 
     private String extractMaxPriceFromJson(String jsonResponse) {
-        if (jsonResponse.isEmpty()) {
+        if (jsonResponse == null || jsonResponse.isEmpty()) {
             return null;
         }
         String maxPrice = null;
@@ -46,7 +47,7 @@ public class QueryUtils {
             JSONArray products = jsonObject.getJSONArray("products");
             //if array is empty - return null;
             if (products.isNull(0)) {
-                log.textAppend(article + " не найдено!");
+                messageListener.onMessage(article + " не найдено!");
                 return null;
             }
             for (int i = 0; i < products.length(); ++i) {
@@ -59,7 +60,7 @@ public class QueryUtils {
                 if (article.equals(propertiesModel)) {
                     // if key "IS_SALE_PRICE" false - return null
                     if (!model.getBoolean("IS_SALE_PRICE")) {
-                        log.textAppend(article + " не распродажная!");
+                        messageListener.onMessage(article + " не распродажная!");
                         return null;
                     }
                     int maxPriceInt = model.getInt("PRICE");
@@ -67,7 +68,7 @@ public class QueryUtils {
                 }
             }
         } catch (JSONException e) {
-            log.textAppend("Проблема с парсингом JSON");
+            messageListener.onMessage("Проблема с парсингом JSON");
         }
         return maxPrice;
     }
@@ -78,7 +79,7 @@ public class QueryUtils {
         try {
             url = uri.toURL();
         } catch (MalformedURLException e) {
-            log.textAppend("Не удалось создать URL");
+            messageListener.onMessage("Не удалось создать URL");
         }
         return url;
     }
@@ -105,10 +106,10 @@ public class QueryUtils {
                 inputStream = connection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {
-                log.textAppend("Код ответа сервера: " + connection.getResponseCode());
+                messageListener.onMessage("Код ответа сервера: " + connection.getResponseCode());
             }
         } catch (IOException e) {
-            log.textAppend("Не удается получить JSON ответ от сервера. " + e);
+            messageListener.onMessage("Не удается получить JSON ответ от сервера. " + e);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -123,7 +124,7 @@ public class QueryUtils {
     private String readFromStream(InputStream inputStream) throws IOException{
         StringBuilder builder = new StringBuilder();
         if (inputStream != null) {
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(inputStreamReader);
             String line = reader.readLine();
             while (line != null) {
