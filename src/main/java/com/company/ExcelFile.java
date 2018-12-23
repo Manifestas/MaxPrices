@@ -195,4 +195,8 @@ public class ExcelFile {
         else
             return "";
     }
+
+    public File getExcelFile() {
+        return excelFile;
+    }
 }

@@ -9,6 +9,7 @@ import com.company.tasks.MaxPriceTableTask;
 import com.company.view.View;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -46,7 +47,7 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
         } else if (button == view.getProcessButton()) {
             process();
         } else if (button == view.getShowTableButton()) {
-
+            openFile();
         } else if (button == view.getShowInstructionButton()) {
 
         } else if (button == view.getExitButton()) {
@@ -97,6 +98,24 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
             MaxPriceTableTask maxPriceTableTask = new MaxPriceTableTask(excelFile, queryUtils);
             maxPriceTableTask.addPropertyChangeListener(this);
             maxPriceTableTask.execute();
+        }
+    }
+
+    private void openFile() {
+        Desktop desktop = Desktop.getDesktop();
+        try {
+            desktop.open(excelFile.getExcelFile());
+        } catch (NullPointerException e) {
+            view.addTextToTextArea("Необходимо сначала выбрать файл.");
+        } catch (IllegalArgumentException e) {
+            view.addTextToTextArea("Файл не существует, возможно он удален или перемещен.");
+        } catch (UnsupportedOperationException e) {
+            view.addTextToTextArea("Данная платформа не поддерживает открытие файла отсюда.");
+        } catch (IOException e) {
+            view.addTextToTextArea("Файл таблицы не ассоциирован с какой либо программой для открытия" +
+                    " или программа не смогла запуститься.");
+        } catch (SecurityException e) {
+            view.addTextToTextArea("Доступ к файлу запрещен.");
         }
     }
 
