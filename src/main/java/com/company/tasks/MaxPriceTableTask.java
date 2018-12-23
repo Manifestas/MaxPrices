@@ -18,12 +18,12 @@ public class MaxPriceTableTask extends SwingWorker<Void, Void> {
     }
 
     @Override
-    protected Void doInBackground() throws Exception {
+    protected Void doInBackground() {
         Sheet sheet = file.getSheet();
         int lastRowNum = sheet.getLastRowNum();
         // перебрать все строки в таблице, кроме первой
         for (int i = 1; i <= lastRowNum; ++i) {
-            if (isCancelled()) {
+            if (isCancelled()) { // нажата кнопка остановить
                 return null;
             }
             // взять название модели
