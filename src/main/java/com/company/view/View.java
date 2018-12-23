@@ -7,6 +7,8 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class View {
 
@@ -16,6 +18,7 @@ public class View {
     private JButton showTableButton;
     private JButton showInstructionButton;
     private JButton exitButton;
+    private List<JButton> allButtons = new ArrayList<>();
 
     private JProgressBar progressBar;
     private JTextArea textArea;
@@ -53,18 +56,21 @@ public class View {
 
     private void setupButtons(JPanel panel) {
         loadTableButton = new JButton("Загрузить таблицу");
+        allButtons.add(loadTableButton);
         removeDuplicatesButton = new JButton("Удалить дубликаты");
+        allButtons.add(removeDuplicatesButton);
         processButton = new JButton("Поставить цены");
+        allButtons.add(processButton);
         showTableButton = new JButton("Показать таблицу");
+        allButtons.add(showTableButton);
         showInstructionButton = new JButton(("Инструкция"));
+        allButtons.add(showInstructionButton);
         exitButton = new JButton("Выход");
+        allButtons.add(exitButton);
 
-        panel.add(loadTableButton);
-        panel.add(removeDuplicatesButton);
-        panel.add(processButton);
-        panel.add(showTableButton);
-        panel.add(showInstructionButton);
-        panel.add(exitButton);
+        for (JButton each : allButtons) {
+            panel.add(each);
+        }
     }
 
     private void setupTextArea() {
@@ -143,5 +149,9 @@ public class View {
 
     public JButton getExitButton() {
         return exitButton;
+    }
+
+    public List<JButton> getAllButtons() {
+        return allButtons;
     }
 }

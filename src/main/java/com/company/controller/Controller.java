@@ -17,6 +17,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
 public class Controller implements ActionListener, PropertyChangeListener, MessageListener {
 
@@ -29,12 +30,10 @@ public class Controller implements ActionListener, PropertyChangeListener, Messa
     }
 
     private void setOnclickListenerForButtons() {
-        view.getLoadTableButton().addActionListener(this);
-        view.getRemoveDuplicatesButton().addActionListener(this);
-        view.getProcessButton().addActionListener(this);
-        view.getShowTableButton().addActionListener(this);
-        view.getShowInstructionButton().addActionListener(this);
-        view.getExitButton().addActionListener(this);
+        List<JButton> allButtons = view.getAllButtons();
+        for (JButton each : allButtons) {
+            each.addActionListener(this);
+        }
     }
 
     @Override
