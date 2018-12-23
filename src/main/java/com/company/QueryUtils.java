@@ -5,10 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 
 public class QueryUtils {
@@ -75,11 +72,13 @@ public class QueryUtils {
 
     private URL createUrl(String query) {
         URL url = null;
-        URI uri = URI.create(REQUEST_URL + MODEL_TAG + query);
         try {
+            // для русских букв в названии
+            String utf8Query = URLEncoder.encode(query, "UTF-8");
+            URI uri = URI.create(REQUEST_URL + MODEL_TAG + utf8Query);
             url = uri.toURL();
-        } catch (MalformedURLException e) {
-            messageListener.onMessage("Не удалось создать URL");
+        } catch (Exception e) {
+            messageListener.onMessage("Не удалось создать URL для " + query);
         }
         return url;
     }
