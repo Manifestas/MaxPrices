@@ -68,7 +68,7 @@ public class ExcelFile {
         newCell.setCellComment(oldCell.getCellComment());
         newCell.setCellStyle(oldCell.getCellStyle());
 
-        switch (newCell.getCellType()) {
+        switch (newCell.getCellTypeEnum()) {
             case BOOLEAN: {
                 newCell.setCellValue(oldCell.getBooleanCellValue());
                 break;
