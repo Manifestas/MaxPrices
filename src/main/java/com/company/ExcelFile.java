@@ -101,16 +101,17 @@ public class ExcelFile {
     }
 
     public boolean loadSheet() throws IOException {
-        InputStream inputStream = new FileInputStream(excelFile);
-        if (getFileExtension(excelFile).equalsIgnoreCase("xls")) {
-            workbook = new HSSFWorkbook(inputStream);
-        } else if (getFileExtension(excelFile).equalsIgnoreCase("xlsx")) {
-            workbook = new XSSFWorkbook(inputStream);
-        } else {
-            return false;
+        try (InputStream inputStream = new FileInputStream(excelFile)) {
+            if (getFileExtension(excelFile).equalsIgnoreCase("xls")) {
+                workbook = new HSSFWorkbook(inputStream);
+            } else if (getFileExtension(excelFile).equalsIgnoreCase("xlsx")) {
+                workbook = new XSSFWorkbook(inputStream);
+            } else {
+                return false;
+            }
+            // таблица на первом листе
+            sheet = workbook.getSheetAt(0);
         }
-        // таблица на первом листе
-        sheet = workbook.getSheetAt(0);
         return true;
     }
 
@@ -176,10 +177,8 @@ public class ExcelFile {
      * Сохраняет(перезаписывает) таблицу на жесткий диск.
      */
     public void closeTable() {
-        try {
-            FileOutputStream fileOut = new FileOutputStream(excelFile);
+        try(FileOutputStream fileOut = new FileOutputStream(excelFile)) {
             workbook.write(fileOut);
-            fileOut.close();
         } catch (FileNotFoundException e) {
             messageListener.onMessage("По некоторым причинам файл не может быть открыт " + e);
         } catch (IOException e) {
