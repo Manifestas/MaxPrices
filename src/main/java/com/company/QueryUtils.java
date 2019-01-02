@@ -66,7 +66,9 @@ public class QueryUtils {
         } catch (JSONException e) {
             messageListener.onMessage("Проблема с парсингом JSON");
         }
-        messageListener.onMessage(article + " не найдено.");
+        if (maxPrice == null) {
+            messageListener.onMessage(article + " не найдено.");
+        }
         return maxPrice;
     }
 
