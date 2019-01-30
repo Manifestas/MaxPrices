@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 public class QueryUtils {
 
-    private static final String REQUEST_URL = "http://www.parad-shoes.ru/api/products?";
+    private static final String REQUEST_URL = "https://www.parad-shoes.ru/api/products?";
     private static final String MODEL_TAG = "tags%5B%5D=";
     private static final String USER_AGENT = "Mozilla/5.0";
 
