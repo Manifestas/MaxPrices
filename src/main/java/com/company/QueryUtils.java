@@ -50,7 +50,7 @@ public class QueryUtils {
                 JSONObject model = products.getJSONObject(i);
                 JSONObject properties = model.getJSONObject("PROPERTIES");
                 JSONObject articul = properties.getJSONObject("ARTICUL");
-                String propertiesModel = articul.getString("value");
+                String propertiesModel = articul.getString("print_value");
                 // убрать эскейп символ
                 propertiesModel = propertiesModel.replace("\\", "");
                 if (article.equals(propertiesModel)) {
